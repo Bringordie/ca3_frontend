@@ -3,7 +3,7 @@ import "./App.css";
 import { Switch, Route, NavLink } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
-function App({ jokeFacade, authFacade }) {
+function App({ apiFetchFacade, authFacade }) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const logout = () => {
@@ -25,7 +25,7 @@ function App({ jokeFacade, authFacade }) {
         <LogIn login={login} />
       ) : (
         <div>
-          <LoggedIn jokeFacade={jokeFacade} />
+          <LoggedIn apiFetchFacade={apiFetchFacade} />
           <button onClick={logout}>Logout</button>
         </div>
       )}
@@ -60,7 +60,7 @@ function LogIn({ login }) {
   );
 }
 
-function LoggedIn({ jokeFacade }) {
+function LoggedIn({ apiFetchFacade }) {
   const [role, setRole] = useState("");
   useEffect(() => {
     var token = localStorage.getItem("jwtToken");
@@ -75,8 +75,8 @@ function LoggedIn({ jokeFacade }) {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route path="/jokes">
-          <Jokes jokeFacade={jokeFacade} />
+        <Route path="/fetch">
+          <ApiFetch apiFetchFacade={apiFetchFacade} />
         </Route>
         <Route path="/custompage">
           <Custompage />
@@ -99,8 +99,8 @@ function Header() {
           </NavLink>
         </li>
         <li>
-          <NavLink activeClassName="active" to="/jokes">
-            Jokes
+          <NavLink activeClassName="active" to="/fetch">
+            Api Fetch
           </NavLink>
         </li>
         <li>
@@ -137,27 +137,28 @@ function Custompage() {
   );
 }
 
-function Jokes({ jokeFacade }) {
-  const [jokes, setJokes] = useState([]);
+function ApiFetch({ apiFetchFacade }) {
+  const [ca3fetch, setCa3fetch] = useState([]);
 
   useEffect(() => {
-    jokeFacade()
-      .getJokes()
+    apiFetchFacade()
+      .getApiFetch()
       .then((data) => {
-        setJokes({ ...data });
+        setCa3fetch({ ...data });
       });
   }, []);
 
   return (
     <div>
       <ul>
-        <li>Chuck joke : {jokes.chuckJoke}</li>
-        <li>Chuck joke url : {jokes.chuckJokeURL}</li>
-        <li>Dad joke : {jokes.dadJoke}</li>
-        <li>Dad joke url : {jokes.dadJokeURL}</li>
+        <li>Chuck joke : {ca3fetch.chuckJoke}</li>
+        <li>Chuck joke url : {ca3fetch.chuckJokeURL}</li>
+        <li>Dad joke : {ca3fetch.dadJoke}</li>
+        <li>Dad joke url : {ca3fetch.dadJokeURL}</li>
+        <li>{JSON.stringify(ca3fetch.scanner)}</li>
         <li>
           Dog Message :{" "}
-          <img src={jokes.dogDTOMessage} alt={jokes.dogDTOMessage}></img>
+          <img src={ca3fetch.dogDTOMessage} alt={ca3fetch.dogDTOMessage}></img>
         </li>
       </ul>
     </div>

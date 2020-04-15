@@ -1,6 +1,6 @@
 import facade from "./authFacade";
 
-function jokeFacade() {
+function apiFetchFacade() {
   function handleHttpErrors(res) {
     if (!res.ok) {
       return Promise.reject({ status: res.status, fullError: res.json() });
@@ -8,7 +8,7 @@ function jokeFacade() {
     return res.json();
   }
 
-  const getJokes = () => {
+  const getApiFetch = () => {
     const options = facade.makeOptions("GET", true);
     return fetch("http://localhost:8080/ca3/api/info/test", options).then(
       handleHttpErrors
@@ -16,8 +16,8 @@ function jokeFacade() {
   };
 
   return {
-    getJokes,
+    getApiFetch,
   };
 }
 
-export default jokeFacade;
+export default apiFetchFacade;

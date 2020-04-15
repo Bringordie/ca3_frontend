@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Switch, Route, NavLink } from "react-router-dom";
-// import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 
 function App({ jokeFacade, scrapeFacade, authFacade }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -61,10 +61,13 @@ function LogIn({ login }) {
 }
 
 function LoggedIn({ jokeFacade, scrapeFacade }) {
-  // const [role, setRole] = useState("");
-  // var token = localStorage.getItem("jwtToken");
-  // var decoded = jwt_decode(token);
-  // setRole(decoded.roles);
+  const [role, setRole] = useState("");
+  useEffect(() => {
+    var token = localStorage.getItem("jwtToken");
+    var decoded = jwt_decode(token);
+    setRole(decoded.roles);
+  }, []);
+  console.log(role);
   return (
     <div>
       <Header />

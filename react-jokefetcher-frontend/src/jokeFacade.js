@@ -10,14 +10,13 @@ function jokeFacade() {
 
   const getJokes = () => {
     const options = facade.makeOptions("GET", true);
-    return fetch(
-      "http://localhost:8080/securitystarter/api/jokes",
-      options
-    ).then(handleHttpErrors);
+    return fetch("http://localhost:8080/ca3/api/info/test", options).then(
+      handleHttpErrors
+    );
   };
 
   return {
-    getJokes
+    getJokes,
   };
 }
 

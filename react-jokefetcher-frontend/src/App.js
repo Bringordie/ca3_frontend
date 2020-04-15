@@ -3,7 +3,7 @@ import "./App.css";
 import { Switch, Route, NavLink } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
-function App({ jokeFacade, scrapeFacade, authFacade }) {
+function App({ jokeFacade, authFacade }) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const logout = () => {
@@ -25,7 +25,7 @@ function App({ jokeFacade, scrapeFacade, authFacade }) {
         <LogIn login={login} />
       ) : (
         <div>
-          <LoggedIn jokeFacade={jokeFacade} scrapeFacade={scrapeFacade} />
+          <LoggedIn jokeFacade={jokeFacade} />
           <button onClick={logout}>Logout</button>
         </div>
       )}
@@ -60,7 +60,7 @@ function LogIn({ login }) {
   );
 }
 
-function LoggedIn({ jokeFacade, scrapeFacade }) {
+function LoggedIn({ jokeFacade }) {
   const [role, setRole] = useState("");
   useEffect(() => {
     var token = localStorage.getItem("jwtToken");
@@ -78,8 +78,8 @@ function LoggedIn({ jokeFacade, scrapeFacade }) {
         <Route path="/jokes">
           <Jokes jokeFacade={jokeFacade} />
         </Route>
-        <Route path="/scrape">
-          <Scrape scrapeFacade={scrapeFacade} />
+        <Route path="/custompage">
+          <Custompage />
         </Route>
         <Route>
           <NoMatch />
@@ -104,8 +104,8 @@ function Header() {
           </NavLink>
         </li>
         <li>
-          <NavLink activeClassName="active" to="/scrape">
-            Scrape
+          <NavLink activeClassName="active" to="/custompage">
+            Custom page
           </NavLink>
         </li>
       </ul>
@@ -129,6 +129,14 @@ function Home() {
   );
 }
 
+function Custompage() {
+  return (
+    <div>
+      <h2>Todo: Custom page</h2>
+    </div>
+  );
+}
+
 function Jokes({ jokeFacade }) {
   const [jokes, setJokes] = useState([]);
 
@@ -147,32 +155,11 @@ function Jokes({ jokeFacade }) {
         <li>Chuck joke url : {jokes.chuckJokeURL}</li>
         <li>Dad joke : {jokes.dadJoke}</li>
         <li>Dad joke url : {jokes.dadJokeURL}</li>
+        <li>
+          Dog Message :{" "}
+          <img src={jokes.dogDTOMessage} alt={jokes.dogDTOMessage}></img>
+        </li>
       </ul>
-    </div>
-  );
-}
-
-function Scrape({ scrapeFacade }) {
-  const [scrapes, setScrapes] = useState([]);
-
-  useEffect(() => {
-    scrapeFacade()
-      .getScrape()
-      .then((data) => {
-        setScrapes(data);
-      });
-  }, []);
-
-  return (
-    <div>
-      {scrapes.map((scrape, index) => (
-        <ul key={index}>
-          <li>Title : {scrape.title}</li>
-          <li>URL : {scrape.url}</li>
-          <li>Div count : {scrape.divCount}</li>
-          <li>Body count : {scrape.bodyCount}</li>
-        </ul>
-      ))}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Switch, Route, NavLink } from "react-router-dom";
+// import jwt_decode from "jwt-decode";
 
 function App({ jokeFacade, scrapeFacade, authFacade }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -12,8 +13,8 @@ function App({ jokeFacade, scrapeFacade, authFacade }) {
   const login = (user, pass) => {
     authFacade
       .login(user, pass)
-      .then(res => setLoggedIn(true))
-      .catch(res =>
+      .then((res) => setLoggedIn(true))
+      .catch((res) =>
         alert("Status code : " + res.status + " Wrong username or password.")
       );
   };
@@ -36,14 +37,14 @@ function LogIn({ login }) {
   const init = { username: "", password: "" };
   const [loginCredentials, setLoginCredentials] = useState(init);
 
-  const performLogin = evt => {
+  const performLogin = (evt) => {
     evt.preventDefault();
     login(loginCredentials.username, loginCredentials.password);
   };
-  const onChange = evt => {
+  const onChange = (evt) => {
     setLoginCredentials({
       ...loginCredentials,
-      [evt.target.id]: evt.target.value
+      [evt.target.id]: evt.target.value,
     });
   };
 
@@ -60,6 +61,10 @@ function LogIn({ login }) {
 }
 
 function LoggedIn({ jokeFacade, scrapeFacade }) {
+  // const [role, setRole] = useState("");
+  // var token = localStorage.getItem("jwtToken");
+  // var decoded = jwt_decode(token);
+  // setRole(decoded.roles);
   return (
     <div>
       <Header />
@@ -127,7 +132,7 @@ function Jokes({ jokeFacade }) {
   useEffect(() => {
     jokeFacade()
       .getJokes()
-      .then(data => {
+      .then((data) => {
         setJokes({ ...data });
       });
   }, []);
@@ -150,7 +155,7 @@ function Scrape({ scrapeFacade }) {
   useEffect(() => {
     scrapeFacade()
       .getScrape()
-      .then(data => {
+      .then((data) => {
         setScrapes(data);
       });
   }, []);

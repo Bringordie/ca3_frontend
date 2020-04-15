@@ -1,4 +1,4 @@
-const URL = "http://localhost:8080/securitystarter";
+const URL = "http://localhost:8080/ca3";
 
 function handleHttpErrors(res) {
   if (!res.ok) {
@@ -9,7 +9,7 @@ function handleHttpErrors(res) {
 
 function authFacade() {
   /* Insert utility-methods from a latter step (d) here (REMEMBER to uncomment in the returned object when you do)*/
-  const setToken = token => {
+  const setToken = (token) => {
     localStorage.setItem("jwtToken", token);
   };
   const getToken = () => {
@@ -26,11 +26,11 @@ function authFacade() {
   const login = (user, password) => {
     const options = makeOptions("POST", true, {
       username: user,
-      password: password
+      password: password,
     });
     return fetch(URL + "/api/login", options)
       .then(handleHttpErrors)
-      .then(res => {
+      .then((res) => {
         setToken(res.token);
       });
   };
@@ -43,8 +43,8 @@ function authFacade() {
       method: method,
       headers: {
         "Content-type": "application/json",
-        Accept: "application/json"
-      }
+        Accept: "application/json",
+      },
     };
     if (addToken && loggedIn()) {
       opts.headers["x-access-token"] = getToken();
@@ -60,7 +60,7 @@ function authFacade() {
     getToken,
     loggedIn,
     login,
-    logout
+    logout,
     //   fetchData
   };
 }

@@ -70,7 +70,7 @@ function LoggedIn({ apiFetchFacade }) {
   console.log(role);
   return (
     <div>
-      <Header />
+      <Header role={role} />
       <Switch>
         <Route exact path="/">
           <Home />
@@ -78,9 +78,11 @@ function LoggedIn({ apiFetchFacade }) {
         <Route path="/fetch">
           <ApiFetch apiFetchFacade={apiFetchFacade} />
         </Route>
-        <Route path="/custompage">
-          <Custompage />
-        </Route>
+        {role === "admin" && (
+          <Route path="/custompage">
+            <Custompage />
+          </Route>
+        )}
         <Route>
           <NoMatch />
         </Route>
@@ -89,7 +91,7 @@ function LoggedIn({ apiFetchFacade }) {
   );
 }
 
-function Header() {
+function Header({ role }) {
   return (
     <div>
       <ul className="header">
@@ -103,11 +105,13 @@ function Header() {
             Api Fetch
           </NavLink>
         </li>
-        <li>
-          <NavLink activeClassName="active" to="/custompage">
-            Custom page
-          </NavLink>
-        </li>
+        {role === "admin" && (
+          <li>
+            <NavLink activeClassName="active" to="/custompage">
+              Custom page
+            </NavLink>
+          </li>
+        )}
       </ul>
     </div>
   );
@@ -132,7 +136,7 @@ function Home() {
 function Custompage() {
   return (
     <div>
-      <h2>Todo: Custom page</h2>
+      <h2>Only admins can see this special and important message</h2>
     </div>
   );
 }

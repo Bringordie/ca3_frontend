@@ -53,10 +53,12 @@ function App({ apiFetchFacade, authFacade }) {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/fetch">
-            <ApiFetch apiFetchFacade={apiFetchFacade} />
-          </Route>
-          {role === "admin" && (
+          {role.includes("user") && (
+            <Route path="/fetch">
+              <ApiFetch apiFetchFacade={apiFetchFacade} />
+            </Route>
+          )}
+          {role.includes("admin") && (
             <Route path="/custompage">
               <Custompage />
             </Route>
@@ -119,11 +121,21 @@ function Header({ role, loggedIn, logout }) {
 
         {loggedIn ? (
           <>
-            <li>
-              <NavLink activeClassName="active" to="/fetch">
-                Api Fetch
-              </NavLink>
-            </li>
+            {role.includes("admin") && (
+              <li>
+                <NavLink activeClassName="active" to="/custompage">
+                  Custom page
+                </NavLink>
+              </li>
+            )}
+            {role.includes("user") && (
+              <li>
+                <NavLink activeClassName="active" to="/fetch">
+                  Api Fetch
+                </NavLink>
+              </li>
+            )}
+
             <li>
               <NavLink activeClassName="active" onClick={logout} to="/login">
                 Logout
@@ -134,13 +146,6 @@ function Header({ role, loggedIn, logout }) {
           <li>
             <NavLink activeClassName="active" to="/login">
               Login
-            </NavLink>
-          </li>
-        )}
-        {role === "admin" && (
-          <li>
-            <NavLink activeClassName="active" to="/custompage">
-              Custom page
             </NavLink>
           </li>
         )}
@@ -174,9 +179,12 @@ function Home() {
 
   return (
     <div>
-      <h2>
-        Welcome {username} you're logged in with the role: {role}
-      </h2>
+      {!role === "" && (
+        <h2>
+          Welcome {username} you're logged in with the role: {role}
+        </h2>
+      )}
+      {role === "" && <h2>Welcome. Please log in. {role}</h2>}
     </div>
   );
 }

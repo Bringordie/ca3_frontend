@@ -4,30 +4,77 @@ import { Switch, Route, NavLink } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
 function App({ apiFetchFacade, authFacade }) {
-  const [loggedIn, setLoggedIn] = useState(false);
+  let token = localStorage.getItem("jwtToken");
+
+  const [loggedIn, setLoggedIn] = useState(token !== undefined);
+  const [role, setRole] = useState("");
 
   const logout = () => {
     authFacade.logout();
     setLoggedIn(false);
+    updateRoles();
   };
+
   const login = (user, pass) => {
     authFacade
       .login(user, pass)
       .then((res) => setLoggedIn(true))
+      .then((res) => updateRoles())
       .catch((res) =>
         alert("Status code : " + res.status + " Wrong username or password.")
       );
   };
 
+  function updateRoles() {
+    token = localStorage.getItem("jwtToken");
+    if (token) {
+      var decoded = jwt_decode(token);
+      setRole(decoded.roles);
+    } else {
+      setRole(null);
+    }
+  }
+
+  useEffect(() => {
+    token = localStorage.getItem("jwtToken");
+    if (token) {
+      var decoded = jwt_decode(token);
+      setLoggedIn(true);
+      setRole(decoded.roles);
+    }
+  }, []);
+
+  console.log(role);
   return (
     <div className="App">
-      {!loggedIn ? (
-        <LogIn login={login} />
-      ) : (
-        <div>
-          <LoggedIn apiFetchFacade={apiFetchFacade} />
-          <button onClick={logout}>Logout</button>
-        </div>
+      <Header loggedIn={loggedIn} role={role} logout={logout} />
+      {loggedIn && (
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/fetch">
+            <ApiFetch apiFetchFacade={apiFetchFacade} />
+          </Route>
+          {role === "admin" && (
+            <Route path="/custompage">
+              <Custompage />
+            </Route>
+          )}
+          <Route>
+            <NoMatch />
+          </Route>
+        </Switch>
+      )}
+      {!loggedIn && (
+        <Switch>
+          <Route path="/login">
+            <LogIn login={login} />
+          </Route>
+          <Route>
+            <LogIn login={login} />
+          </Route>
+        </Switch>
       )}
     </div>
   );
@@ -60,38 +107,7 @@ function LogIn({ login }) {
   );
 }
 
-function LoggedIn({ apiFetchFacade }) {
-  const [role, setRole] = useState("");
-  useEffect(() => {
-    var token = localStorage.getItem("jwtToken");
-    var decoded = jwt_decode(token);
-    setRole(decoded.roles);
-  }, []);
-  console.log(role);
-  return (
-    <div>
-      <Header role={role} />
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
-        <Route path="/fetch">
-          <ApiFetch apiFetchFacade={apiFetchFacade} />
-        </Route>
-        {role === "admin" && (
-          <Route path="/custompage">
-            <Custompage />
-          </Route>
-        )}
-        <Route>
-          <NoMatch />
-        </Route>
-      </Switch>
-    </div>
-  );
-}
-
-function Header({ role }) {
+function Header({ role, loggedIn, logout }) {
   return (
     <div>
       <ul className="header">
@@ -100,11 +116,27 @@ function Header({ role }) {
             Home
           </NavLink>
         </li>
-        <li>
-          <NavLink activeClassName="active" to="/fetch">
-            Api Fetch
-          </NavLink>
-        </li>
+
+        {loggedIn ? (
+          <>
+            <li>
+              <NavLink activeClassName="active" to="/fetch">
+                Api Fetch
+              </NavLink>
+            </li>
+            <li>
+              <NavLink activeClassName="active" onClick={logout} to="/login">
+                Logout
+              </NavLink>
+            </li>
+          </>
+        ) : (
+          <li>
+            <NavLink activeClassName="active" to="/login">
+              Login
+            </NavLink>
+          </li>
+        )}
         {role === "admin" && (
           <li>
             <NavLink activeClassName="active" to="/custompage">
@@ -125,10 +157,26 @@ function NoMatch() {
   );
 }
 
+function Capatialize(prop) {
+  return prop.charAt(0).toUpperCase() + prop.slice(1);
+}
+
 function Home() {
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    var token = localStorage.getItem("jwtToken");
+    var decoded = jwt_decode(token);
+    setUsername(Capatialize(decoded.username));
+    setRole(decoded.roles);
+  }, []);
+
   return (
     <div>
-      <h2>Home</h2>
+      <h2>
+        Welcome {username} you're logged in with the role: {role}
+      </h2>
     </div>
   );
 }
@@ -141,6 +189,38 @@ function Custompage() {
   );
 }
 
+function Table(props) {
+  if (
+    props === undefined ||
+    props === null ||
+    props.scanner === undefined ||
+    props.scanner.Places === undefined
+  )
+    return <></>;
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>PlaceId</th>
+          <th>PlaceName</th>
+          <th>CountryId</th>
+        </tr>
+      </thead>
+      <tbody>{props.scanner.Places.map((place) => DisplayPlace(place))}</tbody>
+    </table>
+  );
+}
+
+function DisplayPlace(place) {
+  return (
+    <tr key={place.PlaceId}>
+      <td>{place.PlaceId}</td>
+      <td>{place.PlaceName}</td>
+      <td>{place.CountryId}</td>
+    </tr>
+  );
+}
+
 function ApiFetch({ apiFetchFacade }) {
   const [ca3fetch, setCa3fetch] = useState([]);
 
@@ -150,7 +230,7 @@ function ApiFetch({ apiFetchFacade }) {
       .then((data) => {
         setCa3fetch({ ...data });
       });
-  }, []);
+  }, [apiFetchFacade]);
 
   return (
     <div>
@@ -159,7 +239,7 @@ function ApiFetch({ apiFetchFacade }) {
         <li>Chuck joke url : {ca3fetch.chuckJokeURL}</li>
         <li>Dad joke : {ca3fetch.dadJoke}</li>
         <li>Dad joke url : {ca3fetch.dadJokeURL}</li>
-        <li>{JSON.stringify(ca3fetch.scanner)}</li>
+        <Table scanner={ca3fetch.scanner} />
         <li>
           Dog Message :{" "}
           <img src={ca3fetch.dogDTOMessage} alt={ca3fetch.dogDTOMessage}></img>

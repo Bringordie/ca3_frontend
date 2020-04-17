@@ -1,4 +1,4 @@
-const URL = "http://localhost:8080/ca3";
+const URL = "https://cphfb.codes/ca3";
 
 function handleHttpErrors(res) {
   if (!res.ok) {

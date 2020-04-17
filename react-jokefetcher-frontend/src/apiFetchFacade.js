@@ -10,7 +10,7 @@ function apiFetchFacade() {
 
   const getApiFetch = () => {
     const options = facade.makeOptions("GET", true);
-    return fetch("http://localhost:8080/ca3/api/info/test", options).then(
+    return fetch("https://cphfb.codes/ca3/api/info/test", options).then(
       handleHttpErrors
     );
   };

@@ -3,13 +3,13 @@
 Login credentials:
 
 user = 
-nusername: user 
+username: user 
 password: test123
 
 admin = 
-nusername: admin
+username: admin
 password: test123
 
 both = 
-nusername: user_admin
+username: user_admin
 password: test123
